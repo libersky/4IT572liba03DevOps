@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2.4.1
         with:
-          node-version: 10
+          node-version: 14
 
       # Cache the node_modules based on package-lock hash. Cache is shared across the repo
       - name: Cache node modules
@@ -57,7 +57,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 14
 
       - name: Load cached node_modules
         uses: actions/cache@v2
@@ -85,7 +85,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 14
 
       - name: Load cached node_modules
         uses: actions/cache@v2
