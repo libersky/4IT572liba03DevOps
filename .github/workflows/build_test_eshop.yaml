@@ -117,6 +117,6 @@ jobs:
             ./node_modules
             ./build
             
-      - name: Run Unit Tests
-        run: ./node_modules/.bin/firebase deploy --token "1//0d19NPr6nFZ4_CgYIARAAGA0SNwF-L9IrAuvkAvntqqLYHhK1OIwO06c1jVQfabtM2UjTRwhvrUxEXJ0l6pOcEDSFYZ-R6o2Z7LE"
+      - name: Deploy to Firebase
+        run: ./node_modules/.bin/firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
     
