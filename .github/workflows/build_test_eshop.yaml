@@ -44,24 +44,22 @@ jobs:
         uses: actions/setup-node@v2.4.1
         with:
           node-version: 10
-
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
       - name: build
         run: |
           npm rebuild node-sass --force
           npm run build -- --colors
       
-      - name: store artifacts
-        if: ${{ github.ref == 'refs/heads/master'}}
-        uses: actions/upload-artifact@v2
+      - name: Cache node_modules and ./build
+        uses: actions/cache@v2
         with:
-          name: build
-          path: build
+          path: |
+            ~/.npm
+            ./node_modules
+            ./build
+          key: ${{ runner.os }}-build-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ github.run_id }}
 
   Test:
     needs: Install
@@ -104,10 +102,14 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - name: Load cached ./node_modules and ./dist
+        uses: actions/cache@v2
         with:
-          name: build
+          key: ${{ runner.os }}-build-${{ github.run_id }}
+          path: |
+            ~/.npm
+            ./node_modules
+            ./build
             
       - name: Run Unit Tests
         run: ./node_modules/.bin/firebase deploy --token "1//0d19NPr6nFZ4_CgYIARAAGA0SNwF-L9IrAuvkAvntqqLYHhK1OIwO06c1jVQfabtM2UjTRwhvrUxEXJ0l6pOcEDSFYZ-R6o2Z7LE"
