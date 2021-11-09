@@ -91,11 +91,6 @@ jobs:
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          node-version: 10
-
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -103,5 +98,5 @@ jobs:
           key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
       - name: Run Unit Tests
-        run: ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN
+        run: ./node_modules/.bin/firebase deploy --token=${{ secrets.WORKFLOW_TOKEN }}
     
