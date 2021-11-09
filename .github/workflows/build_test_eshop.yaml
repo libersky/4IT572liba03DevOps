@@ -55,6 +55,13 @@ jobs:
         run: |
           npm rebuild node-sass --force
           npm run build -- --colors
+      
+      - name: store artifacts
+        if: ${{ github.ref == 'refs/heads/master'}}
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build
 
   Test:
     needs: Install
@@ -97,6 +104,11 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+            
       - name: Run Unit Tests
         run: ./node_modules/.bin/firebase deploy --token "1//0d19NPr6nFZ4_CgYIARAAGA0SNwF-L9IrAuvkAvntqqLYHhK1OIwO06c1jVQfabtM2UjTRwhvrUxEXJ0l6pOcEDSFYZ-R6o2Z7LE"
     
