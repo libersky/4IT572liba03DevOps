@@ -98,5 +98,5 @@ jobs:
           key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
       - name: Run Unit Tests
-        run: ./node_modules/.bin/firebase deploy --token "${{ secrets.WORKFLOW_TOKEN }}"
+        run: ./node_modules/.bin/firebase deploy --token "1//0d19NPr6nFZ4_CgYIARAAGA0SNwF-L9IrAuvkAvntqqLYHhK1OIwO06c1jVQfabtM2UjTRwhvrUxEXJ0l6pOcEDSFYZ-R6o2Z7LE"
     
