@@ -4,3 +4,6 @@ Vytvorit CI/CD
     - Udelat master protected, aby tam neslo pushovat naprimo
     - Udelat checky Install, Build a Test povinne, aby bez nich neslo 
         mergovat (zmacknout merge buttton)
+
+ODEVZDAVANI FORMOU SCREENSHOTU NA SLACK V PRIME ZPRAVE 
+    - NASTAVENI GITHUB, WORKFLOW S TRIGGEREM, VIDITELNE BEZICI CHECKY NA PR
