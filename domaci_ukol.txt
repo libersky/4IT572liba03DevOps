@@ -1,0 +1,6 @@
+Vytvorit CI/CD 
+    - Bezet workflow pri pull-requestu do master
+    - Bezet workflow pri pushy do masteru
+    - Udelat master protected, aby tam neslo pushovat naprimo
+    - Udelat checky Install, Build a Test povinne, aby bez nich neslo 
+        mergovat (zmacknout merge buttton)
