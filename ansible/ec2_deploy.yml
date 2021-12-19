@@ -3,6 +3,14 @@
   connection: local
 
   tasks:
+    - name: Identify old instances for termination
+      ec2_instance_info:
+        region: us-east-1
+        aws_access_key: "{{ lookup('env', 'ACCESS_KEY') }}"
+        aws_secret_key: "{{ lookup('env', 'SECRET_KEY') }}"
+        security_token: "{{ lookup('env', 'SESSION_TOKEN') }}"
+      register: ec2_stat
+
     - name: Launch EC2 instance
       amazon.aws.ec2:
         instance_type: t2.small
@@ -73,3 +81,20 @@
       become: yes
     - wait_for:
         port: 80
+
+- name: Terminate instances
+  hosts: localhost
+  connection: local
+
+  tasks:
+  - name: Terminate old instances
+    amazon.aws.ec2:
+      region: us-east-1
+      state: absent
+      aws_access_key: "{{ lookup('env', 'ACCESS_KEY') }}"
+      aws_secret_key: "{{ lookup('env', 'SECRET_KEY') }}"
+      security_token: "{{ lookup('env', 'SESSION_TOKEN') }}"
+      instance_ids: '{{ item.instance_id }}'
+    loop: "{{ ec2_stat.instances }}"
+    loop_control:
+      label: "{{ item.instance_id }}"
