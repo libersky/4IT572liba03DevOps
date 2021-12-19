@@ -1,98 +1,100 @@
 name: Build and tests our Eshop
 
 on:
+  push:
+    branches: ['**']
   workflow_dispatch:
 
 jobs:
   # Install all dependencies
-  Install:
-    runs-on: ubuntu-latest
+  # Install:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Git Checkout
-        uses: actions/checkout@v2.4.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - name: Git Checkout
+  #       uses: actions/checkout@v2.4.0
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          node-version: 10
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v2.4.1
+  #       with:
+  #         node-version: 10
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: node_modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: node_modules-
+  #     - name: Cache node modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: node_modules
+  #         key: node_modules-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: node_modules-
 
-      - name: Install with npm
-        run: |
-          npm ci
+  #     - name: Install with npm
+  #       run: |
+  #         npm ci
 
-  Build:
-    needs: Install
-    runs-on: ubuntu-latest
+  # Build:
+  #   needs: Install
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Git Checkout
-        uses: actions/checkout@v2.4.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - name: Git Checkout
+  #       uses: actions/checkout@v2.4.0
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          node-version: 10
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v2.4.1
+  #       with:
+  #         node-version: 10
           
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+  #     - name: Cache node modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: node_modules
+  #         key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
-      - name: build
-        run: |
-          npm rebuild node-sass --force
-          npm run build -- --colors
+  #     - name: build
+  #       run: |
+  #         npm rebuild node-sass --force
+  #         npm run build -- --colors
 
-      - name: Cache node modules and build folder
-        if: ${{ github.ref == 'refs/heads/master' }}
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./build
-          key: ${{ runner.os }}-build-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
+  #     - name: Cache node modules and build folder
+  #       if: ${{ github.ref == 'refs/heads/master' }}
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: |
+  #           ~/.npm
+  #           ./node_modules
+  #           ./build
+  #         key: ${{ runner.os }}-build-${{ github.run_id }}
+  #         restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
 
-  Test:
-    needs: Install
-    runs-on: ubuntu-latest
+  # Test:
+  #   needs: Install
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Git Checkout
-        uses: actions/checkout@v2.4.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - name: Git Checkout
+  #       uses: actions/checkout@v2.4.0
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v2.4.1
-        with:
-          node-version: 10
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v2.4.1
+  #       with:
+  #         node-version: 10
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: node_modules-${{ hashFiles('**/package-lock.json') }}
+  #     - name: Cache node modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: node_modules
+  #         key: node_modules-${{ hashFiles('**/package-lock.json') }}
       
-      - name: Run Unit Tests
-        run: npm run test -- --colors
+  #     - name: Run Unit Tests
+  #       run: npm run test -- --colors
     
   Deploy:
-    needs: [Build, Test]
+    # needs: [Build, Test]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
 
@@ -114,6 +116,9 @@ jobs:
 
       - name: create pemfile
         run: echo "${{secrets.DEVOPS_PEM}}" > ./devops.pem
+
+      - name: install ansible EC2 playbook
+        run: ansible-galaxy collection install amazon.aws
 
       - name: Deploy to AWS
         env:
