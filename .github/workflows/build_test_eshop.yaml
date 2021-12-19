@@ -95,6 +95,7 @@ jobs:
     
   Deploy:
     needs: [Build, Test]
+    name: Deploy to AWS
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
 
