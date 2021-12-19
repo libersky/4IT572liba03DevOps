@@ -115,7 +115,9 @@ jobs:
           pip3 install boto boto3 ansible==4
 
       - name: create pemfile
-        run: echo "${{secrets.DEVOPS_PEM}}" > ./devops.pem
+        run: |
+          echo "${{secrets.DEVOPS_PEM}}" > ./devops.pem
+          chmod 400 ./devops.pem
 
       # - name: install ansible EC2 playbook
       #   run: ansible-galaxy collection install amazon.aws
