@@ -1,0 +1,75 @@
+- name: Deploy to EC2
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Launch EC2 instance
+      amazon.aws.ec2:
+        instance_type: t2.small
+        image: ami-0ed9277fb7eb570c9
+        region: us-east-1
+        key_name: devops
+        vpc_subnet_id: subnet-07ef6b37e7ea833ea
+        assign_public_ip: yes
+        count: 1
+        group: eshop
+        wait: true
+        aws_access_key: "{{ lookup('env', 'ACCESS_KEY') }}"
+        aws_secret_key: "{{ lookup('env', 'SECRET_KEY') }}"
+        security_token: "{{ lookup('env', 'SESSION_TOKEN') }}"
+      register: ec2
+
+    - name: Add new instance to host group
+      add_host:
+        hostname: "{{ item.public_ip }}"
+        groupname: launched
+      loop: "{{ ec2.instances }}"
+
+    - name: Wait for SSH to come up
+      delegate_to: "{{ item.public_dns_name }}"
+      wait_for_connection:
+        delay: 30
+        timeout: 300
+      loop: "{{ ec2.instances }}"
+
+- name: Configure EC2
+  hosts: launched
+  connection: ssh
+
+  tasks:
+    - name: Add Centos Extras
+      shell: yum-config-manager --enable extras
+      become: yes
+    - name: Enable docker package
+      shell: amazon-linux-extras enable docker
+      become: yes
+    - name: Install Docker and Git
+      yum:
+        name: 
+          - docker
+          - git
+        state: latest
+        update_cache: yes
+      become: yes
+    - service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+    - name: Set rights to Docker
+      shell: usermod -a -G docker ec2-user
+      become: yes
+    - name: Checkout Git repo
+      git: 
+        repo: "https://github.com/libersky/devOpsLiba03Docker.git"
+        dest: ./app
+    - name: Build eshop docker
+      shell: cd app && docker build -t eshop:latest .
+      become: yes
+    - name: Run eshop
+      shell: docker run -p 80:3000 eshop
+      async: 45
+      poll: 0
+      become: yes
+    - wait_for:
+        port: 80

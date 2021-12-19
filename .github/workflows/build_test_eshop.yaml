@@ -12,7 +12,7 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2.4.0
         with:
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v2.4.1
@@ -38,7 +38,7 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2.4.0
         with:
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v2.4.1
@@ -75,7 +75,7 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2.4.0
         with:
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v2.4.1
@@ -100,16 +100,25 @@ jobs:
       - name: Git Checkout
         uses: actions/checkout@v2.4.0
         with:
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Load node modules and build folder
-        uses: actions/cache@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
         with:
-          path: |
-            ~/.npm
-            ./node_modules
-            ./build
-          key: ${{ runner.os }}-build-${{ github.run_id }}
-      
-      - name: Deploy to firebase
-        run: ./node_modules/.bin/firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+          python-version: 3.7
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible==2.9.2 requests
+
+      - name: create pemfile
+        run: echo "${{secrets.DEVOPS_PEM}}" > ./devops.pem
+
+      - name: Deploy to AWS
+        env:
+          ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SESSION_TOKEN: ${{ secrets.SESSION_TOKEN }}
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: ansible-playbook ./ansible/ec2_deploy.yml --user ec2-user --key-file ./devops.pem
