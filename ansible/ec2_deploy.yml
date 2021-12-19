@@ -9,7 +9,7 @@
         image: ami-0ed9277fb7eb570c9
         region: us-east-1
         key_name: devops
-        vpc_subnet_id: subnet-07ef6b37e7ea833ea
+        vpc_subnet_id: subnet-003d31ccd5ff7edca
         assign_public_ip: yes
         count: 1
         group: eshop
