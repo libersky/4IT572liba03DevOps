@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  Install all dependencies
   Install:
+    name: Install all dependencies
     runs-on: ubuntu-latest
 
     steps:
